@@ -6,10 +6,24 @@ const cors = require('cors')
 
 const app = express()
 
+/* MIDDLEWARES */
 app.use(helmet())
 app.use(cors())
 
+/* INITIALIZE SERVER & SOCKET */
 const httpServer = http.createServer(app)
 const io = socket(httpServer, {})
 
+/* ROUTER INITIALIZE */
+const router = require('./routes')
+app.use(router)
+
+/* SOCKET NAMESPACES */
+const planningIo = io.of('/planning-io')
+const retroIo = io.of('/retro-io')
+
+require('./sockets/planning.socket')(planningIo)
+require('./sockets/retro.socket')(retroIo)
+
+/* SERVER LISTENING */
 httpServer.listen('8080', () => console.log('Server listening at port 8080'))
