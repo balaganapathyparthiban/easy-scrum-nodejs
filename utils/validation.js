@@ -15,63 +15,67 @@ validation.body = (schema) => {
 }
 
 validation.createPlanning = {
-  planningName: { type: 'string' },
-  votingSystem: {
-    type: 'array',
-    items: {
-      type: 'object',
-      optional: true,
-      props: {
-        name: { type: 'string' },
+  name: { type: 'string' },
+  isSpectator: { type: 'boolean', convert: true },
+  roomData: {
+    type: 'object',
+    strict: true,
+    props: {
+      planningName: { type: 'string' },
+      votingSystem: {
+        type: 'array',
+        items: {
+          type: 'object',
+          optional: true,
+          props: {
+            name: { type: 'string' },
+          },
+        },
       },
-    },
-  },
-  stories: {
-    type: 'array',
-    items: {
-      type: 'object',
-      optional: true,
-      props: {
-        name: { type: 'string' },
-        totalVotes: { type: 'string' },
-        majorityVotes: { type: 'string' },
-        votes: {
-          type: 'array',
-          items: {
-            type: 'object',
-            optional: true,
-            props: {
-              userId: { type: 'string' },
-              vote: { type: 'string' },
+      stories: {
+        type: 'array',
+        items: {
+          type: 'object',
+          optional: true,
+          props: {
+            name: { type: 'string' },
+            totalVotes: { type: 'string' },
+            majorityVotes: { type: 'string' },
+            votes: {
+              type: 'array',
+              items: {
+                type: 'object',
+                optional: true,
+                props: {
+                  userId: { type: 'string' },
+                  vote: { type: 'string' },
+                },
+              },
+            },
+            status: {
+              type: 'string',
+              enum: [constants.NOT_STARTED, constants.COMPLETED],
             },
           },
         },
-        status: {
-          type: 'string',
-          enum: [constants.NOT_STARTED, constants.COMPLETED],
+      },
+      users: {
+        type: 'array',
+        items: {
+          type: 'object',
+          optional: true,
+          props: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            isSpectator: { type: 'boolean', convert: true },
+          },
         },
       },
+      currentStory: { type: 'string' },
+      startVoting: { type: 'boolean', convert: true },
+      showVoting: { type: 'boolean', convert: true },
     },
   },
-  users: {
-    type: 'array',
-    items: {
-      type: 'object',
-      optional: true,
-      props: {
-        id: { type: 'string' },
-        name: { type: 'string' },
-        isSpectator: { type: 'boolean', convert: true },
-      },
-    },
-  },
-  whoShowCards: {
-    type: 'string',
-    enum: [constants.ONLY_ME, constants.EVERYONE],
-  },
-  currentStory: { type: 'string' },
-  startVoting: { type: 'boolean', convert: true },
-  showVoting: { type: 'boolean', convert: true },
 }
 
 module.exports = validation

@@ -1,3 +1,5 @@
+process.env.PWD = __dirname
+
 const express = require('express')
 const http = require('http')
 const socket = require('socket.io')
