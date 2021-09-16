@@ -14,7 +14,9 @@ app.use(cors())
 
 /* INITIALIZE SERVER & SOCKET */
 const httpServer = http.createServer(app)
-const io = socket(httpServer, {})
+const io = socket(httpServer, {
+  cors: '*',
+})
 
 /* ROUTER INITIALIZE */
 const router = require('./routes')
@@ -24,8 +26,8 @@ app.use(router)
 const planningIo = io.of('/planning-io')
 const retroIo = io.of('/retro-io')
 
-require('./sockets/planning.socket')(planningIo)
-require('./sockets/retro.socket')(retroIo)
+require('./sockets/planning')(planningIo)
+require('./sockets/retro')(retroIo)
 
 /* SERVER LISTENING */
 httpServer.listen('8080', () => console.log('Server listening at port 8080'))

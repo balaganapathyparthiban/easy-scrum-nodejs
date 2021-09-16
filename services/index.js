@@ -12,7 +12,6 @@ service.createPlanning = (req, res) => {
 
     const roomId = uuidV4()
     const adminId = uuidV4()
-    const adminToken = uuidV4()
 
     req.body.roomData.users.push({
       id: adminId,
@@ -24,14 +23,17 @@ service.createPlanning = (req, res) => {
       path.join(process.env.PWD, 'data', `${roomId}.json`),
       JSON.stringify({
         roomId: roomId,
-        adminId: adminId,
+        adminToken: req.body.planningRoomToken,
         roomData: req.body.roomData,
-        tokens: { [adminToken]: adminId },
+        tokens: { [req.body.planningRoomToken]: adminId },
       })
     )
     return res.json({
       status: 1,
-      data: { planningRoomId: roomId, planningRoomToken: adminToken },
+      data: {
+        planningRoomId: roomId,
+        planningRoomToken: req.body.planningRoomToken,
+      },
     })
   } catch (error) {
     return res.json({

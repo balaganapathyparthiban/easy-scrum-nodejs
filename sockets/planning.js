@@ -5,14 +5,21 @@ const { v4: uuidV4 } = require('uuid')
 module.exports = (io) => {
   io.on('connection', (socket) => {
     socket.on('joinPlanningRoom', (data) => {
-      const readFileData = fs.readFileSync(
-        path.join(process.env.PWD, 'data', `${data.planningRoomId}.json`)
-      )
+      let readFileData
+
+      try {
+        readFileData = fs.readFileSync(
+          path.join(process.env.PWD, 'data', `${data.planningRoomId}.json`)
+        )
+      } catch {
+        return
+      }
+
       const parsedData = JSON.parse(readFileData)
 
-      if (planningRoomToken !== parsedData.adminId) {
+      if (!parsedData.tokens[data.planningRoomToken]) {
         const userId = uuidV4()
-        const userToken = uuidV4()
+        const userToken = data.planningRoomToken
 
         parsedData.roomData.users.push({
           id: userId,
@@ -28,7 +35,7 @@ module.exports = (io) => {
       }
 
       socket.join(data.planningRoomId)
-      io.in(data.planningRoomId).emit('newUserJoined', {
+      io.in(data.planningRoomId).emit('updatedRoomData', {
         ...parsedData.roomData,
       })
     })
