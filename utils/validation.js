@@ -15,8 +15,6 @@ validation.body = (schema) => {
 }
 
 validation.createPlanning = {
-  name: { type: 'string' },
-  isSpectator: { type: 'boolean', convert: true },
   roomData: {
     type: 'object',
     strict: true,
@@ -29,33 +27,6 @@ validation.createPlanning = {
           optional: true,
           props: {
             name: { type: 'string' },
-          },
-        },
-      },
-      stories: {
-        type: 'array',
-        items: {
-          type: 'object',
-          optional: true,
-          props: {
-            name: { type: 'string' },
-            totalVotes: { type: 'string' },
-            majorityVotes: { type: 'string' },
-            votes: {
-              type: 'array',
-              items: {
-                type: 'object',
-                optional: true,
-                props: {
-                  userId: { type: 'string' },
-                  vote: { type: 'string' },
-                },
-              },
-            },
-            status: {
-              type: 'string',
-              enum: [constants.NOT_STARTED, constants.COMPLETED],
-            },
           },
         },
       },
@@ -72,7 +43,6 @@ validation.createPlanning = {
         },
       },
       currentStory: { type: 'string' },
-      startVoting: { type: 'boolean', convert: true },
       showVoting: { type: 'boolean', convert: true },
     },
   },

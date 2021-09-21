@@ -20,6 +20,7 @@ const io = socket(httpServer, {
 
 /* ROUTER INITIALIZE */
 const router = require('./routes')
+const { clearDataJob } = require('./cron')
 app.use(router)
 
 /* SOCKET NAMESPACES */
@@ -28,6 +29,9 @@ const retroIo = io.of('/retro-io')
 
 require('./sockets/planning')(planningIo)
 require('./sockets/retro')(retroIo)
+
+/* START CRON */
+clearDataJob.start()
 
 /* SERVER LISTENING */
 httpServer.listen('8080', () => console.log('Server listening at port 8080'))

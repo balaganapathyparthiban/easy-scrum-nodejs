@@ -11,13 +11,6 @@ service.createPlanning = (req, res) => {
     }
 
     const roomId = uuidV4()
-    const adminId = uuidV4()
-
-    req.body.roomData.users.push({
-      id: adminId,
-      name: req.body.name,
-      isSpectator: req.body.isSpectator,
-    })
 
     fs.writeFileSync(
       path.join(process.env.PWD, 'data', `${roomId}.json`),
@@ -25,7 +18,7 @@ service.createPlanning = (req, res) => {
         roomId: roomId,
         adminToken: req.body.planningRoomToken,
         roomData: req.body.roomData,
-        tokens: { [req.body.planningRoomToken]: adminId },
+        tokens: {},
       })
     )
     return res.json({
