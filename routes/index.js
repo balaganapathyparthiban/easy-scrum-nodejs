@@ -10,4 +10,10 @@ router.post(
   service.createPlanning
 )
 
+router.post(
+  '/create/retro',
+  [express.json(), validation.body(validation.createRetro)],
+  service.createRetro
+)
+
 module.exports = router

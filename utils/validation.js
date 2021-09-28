@@ -48,4 +48,47 @@ validation.createPlanning = {
   },
 }
 
+validation.createRetro = {
+  roomData: {
+    type: 'object',
+    strict: true,
+    props: {
+      retroName: { type: 'string' },
+      users: {
+        type: 'array',
+        items: {
+          type: 'object',
+          optional: true,
+          props: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+          },
+        },
+      },
+      templates: {
+        type: 'array',
+        items: {
+          type: 'object',
+          optional: true,
+          props: {
+            name: { type: 'string' },
+            color: { type: 'string' },
+            list: {
+              type: 'array',
+              items: {
+                type: 'object',
+                optional: true,
+                props: {},
+              },
+            },
+          },
+        },
+      },
+      hideCardInitially: { type: 'boolean', convert: true },
+      showCardAuthor: { type: 'boolean', convert: true },
+      showRetroCards: { type: 'boolean', convert: true },
+    },
+  },
+}
+
 module.exports = validation

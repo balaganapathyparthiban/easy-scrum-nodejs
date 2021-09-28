@@ -1,27 +1,5 @@
-const fs = require('fs')
-const path = require('path')
 const { v4: uuidV4 } = require('uuid')
-
-const getParsedPlanningData = (name) => {
-  let readFileData
-
-  try {
-    readFileData = fs.readFileSync(
-      path.join(process.env.PWD, 'data', `${name}.json`)
-    )
-  } catch {
-    return null
-  }
-
-  return JSON.parse(readFileData)
-}
-
-const writePlanningData = (name, parsedData) => {
-  fs.writeFileSync(
-    path.join(process.env.PWD, 'data', `${name}.json`),
-    JSON.stringify(parsedData)
-  )
-}
+const helper = require('../utils/helper')
 
 module.exports = (io) => {
   io.on('connection', (socket) => {
@@ -29,16 +7,16 @@ module.exports = (io) => {
     let planningRoomToken
     let planningRoomUserId
 
-    socket.on('joinPlanningRoom', (data) => {
+    socket.on('joinRoom', (data) => {
       if (!data.planningRoomId || !data.planningRoomToken) {
         return
       }
 
-      const parsedData = getParsedPlanningData(data.planningRoomId)
+      const parsedData = helper.getParsedJsonData(data.planningRoomId)
 
       if (!parsedData.tokens[data.planningRoomToken]) {
         if (!data.name) {
-          socket.emit('openNameAndSpectatorModal', {})
+          socket.emit('openPersonalDetailsModal', {})
           return
         }
 
@@ -54,7 +32,7 @@ module.exports = (io) => {
         })
         parsedData.tokens[userToken] = userId
 
-        writePlanningData(data.planningRoomId, parsedData)
+        helper.writeJsonData(data.planningRoomId, parsedData)
       } else {
         parsedData.roomData.users = parsedData.roomData.users.map((user) => {
           if (user.id === parsedData.tokens[data.planningRoomToken]) {
@@ -65,7 +43,7 @@ module.exports = (io) => {
           }
         })
 
-        writePlanningData(data.planningRoomId, parsedData)
+        helper.writeJsonData(data.planningRoomId, parsedData)
       }
 
       planningRoomId = data.planningRoomId
@@ -83,7 +61,7 @@ module.exports = (io) => {
       })
     })
     socket.on('updatePlanningVote', (data) => {
-      const parsedData = getParsedPlanningData(planningRoomId)
+      const parsedData = helper.getParsedJsonData(planningRoomId)
 
       parsedData.roomData.users = parsedData.roomData.users.map((user) => {
         if (user.id === planningRoomUserId) {
@@ -94,26 +72,26 @@ module.exports = (io) => {
         }
       })
 
-      writePlanningData(planningRoomId, parsedData)
+      helper.writeJsonData(planningRoomId, parsedData)
       io.in(planningRoomId).emit('updatedRoomData', {
         ...parsedData.roomData,
       })
     })
     socket.on('showVoting', (data) => {
-      const parsedData = getParsedPlanningData(planningRoomId)
+      const parsedData = helper.getParsedJsonData(planningRoomId)
 
       parsedData.roomData.showVoting =
         parsedData.adminToken === planningRoomToken
           ? data.showVoting
           : parsedData.roomData.showVoting
 
-      writePlanningData(planningRoomId, parsedData)
+      helper.writeJsonData(planningRoomId, parsedData)
       io.in(planningRoomId).emit('updatedRoomData', {
         ...parsedData.roomData,
       })
     })
     socket.on('votingReset', (data) => {
-      const parsedData = getParsedPlanningData(planningRoomId)
+      const parsedData = helper.getParsedJsonData(planningRoomId)
 
       parsedData.roomData.users = parsedData.roomData.users.map((user) => {
         user.vote = null
@@ -123,13 +101,13 @@ module.exports = (io) => {
       })
       parsedData.roomData.showVoting = false
 
-      writePlanningData(planningRoomId, parsedData)
+      helper.writeJsonData(planningRoomId, parsedData)
       io.in(planningRoomId).emit('updatedRoomData', {
         ...parsedData.roomData,
       })
     })
-    socket.on('updateNameAndSpectatorStatus', (data) => {
-      const parsedData = getParsedPlanningData(planningRoomId)
+    socket.on('updatePersonalInfo', (data) => {
+      const parsedData = helper.getParsedJsonData(planningRoomId)
 
       parsedData.roomData.users = parsedData.roomData.users.map((user) => {
         if (planningRoomUserId === user.id) {
@@ -141,26 +119,26 @@ module.exports = (io) => {
         }
       })
 
-      writePlanningData(planningRoomId, parsedData)
+      helper.writeJsonData(planningRoomId, parsedData)
       io.in(planningRoomId).emit('updatedRoomData', {
         ...parsedData.roomData,
       })
     })
     socket.on('updatePlanningNameAndVotingSystem', (data) => {
-      const parsedData = getParsedPlanningData(planningRoomId)
+      const parsedData = helper.getParsedJsonData(planningRoomId)
 
       if (parsedData.adminToken !== planningRoomToken) return
 
       parsedData.roomData.planningName = data.planningName
       parsedData.roomData.votingSystem = data.votingSystem
 
-      writePlanningData(planningRoomId, parsedData)
+      helper.writeJsonData(planningRoomId, parsedData)
       io.in(planningRoomId).emit('updatedRoomData', {
         ...parsedData.roomData,
       })
     })
     socket.on('disconnect', () => {
-      const parsedData = getParsedPlanningData(planningRoomId)
+      const parsedData = helper.getParsedJsonData(planningRoomId)
 
       parsedData.roomData.users = parsedData.roomData.users.map((user) => {
         if (planningRoomUserId === user.id) {
@@ -171,7 +149,7 @@ module.exports = (io) => {
         }
       })
 
-      writePlanningData(planningRoomId, parsedData)
+      helper.writeJsonData(planningRoomId, parsedData)
       io.in(planningRoomId).emit('updatedRoomData', {
         ...parsedData.roomData,
       })
