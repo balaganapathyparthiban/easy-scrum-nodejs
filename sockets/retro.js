@@ -58,5 +58,63 @@ module.exports = (io) => {
         retroRoomUserId: retroRoomUserId,
       })
     })
+    socket.on('updateNewCard', (data) => {
+      const parsedData = helper.getParsedJsonData(retroRoomId)
+
+      parsedData.roomData.templates = data.filter((d) => (d ? true : false))
+
+      helper.writeJsonData(retroRoomId, parsedData)
+      io.in(retroRoomId).emit('updatedRoomData', {
+        ...parsedData.roomData,
+      })
+    })
+    socket.on('updatePersonalInfo', (data) => {
+      const parsedData = helper.getParsedJsonData(retroRoomId)
+
+      parsedData.roomData.users = parsedData.roomData.users.map((user) => {
+        if (retroRoomUserId === user.id) {
+          user.name = data.name
+        }
+        return {
+          ...user,
+        }
+      })
+
+      helper.writeJsonData(retroRoomId, parsedData)
+      io.in(retroRoomId).emit('updatedRoomData', {
+        ...parsedData.roomData,
+      })
+    })
+    socket.on('updateRetroDetails', (data) => {
+      const parsedData = helper.getParsedJsonData(retroRoomId)
+
+      if (parsedData.adminToken !== retroRoomToken) return
+
+      parsedData.roomData.retroName = data.retroName
+      parsedData.roomData.templates = data.templates
+      parsedData.roomData.showCardAuthor = data.showCardAuthor
+
+      helper.writeJsonData(retroRoomId, parsedData)
+      io.in(retroRoomId).emit('updatedRoomData', {
+        ...parsedData.roomData,
+      })
+    })
+    socket.on('disconnect', () => {
+      const parsedData = helper.getParsedJsonData(retroRoomId)
+
+      parsedData.roomData.users = parsedData.roomData.users.map((user) => {
+        if (retroRoomUserId === user.id) {
+          user.isOnline = false
+        }
+        return {
+          ...user,
+        }
+      })
+
+      helper.writeJsonData(retroRoomId, parsedData)
+      io.in(retroRoomId).emit('updatedRoomData', {
+        ...parsedData.roomData,
+      })
+    })
   })
 }

@@ -124,7 +124,7 @@ module.exports = (io) => {
         ...parsedData.roomData,
       })
     })
-    socket.on('updatePlanningNameAndVotingSystem', (data) => {
+    socket.on('updatePlanningDetails', (data) => {
       const parsedData = helper.getParsedJsonData(planningRoomId)
 
       if (parsedData.adminToken !== planningRoomToken) return

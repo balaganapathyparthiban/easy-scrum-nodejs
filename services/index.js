@@ -49,7 +49,7 @@ service.createRetro = (req, res) => {
       path.join(process.env.PWD, 'data', `${roomId}.json`),
       JSON.stringify({
         roomId: roomId,
-        adminToken: req.body.retoRoomToken,
+        adminToken: req.body.retroRoomToken,
         roomData: req.body.roomData,
         tokens: {},
       })

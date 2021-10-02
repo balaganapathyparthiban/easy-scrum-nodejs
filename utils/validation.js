@@ -15,6 +15,7 @@ validation.body = (schema) => {
 }
 
 validation.createPlanning = {
+  planningRoomToken: { type: 'string' },
   roomData: {
     type: 'object',
     strict: true,
@@ -49,6 +50,7 @@ validation.createPlanning = {
 }
 
 validation.createRetro = {
+  retroRoomToken: { type: 'string' },
   roomData: {
     type: 'object',
     strict: true,
@@ -84,9 +86,7 @@ validation.createRetro = {
           },
         },
       },
-      hideCardInitially: { type: 'boolean', convert: true },
       showCardAuthor: { type: 'boolean', convert: true },
-      showRetroCards: { type: 'boolean', convert: true },
     },
   },
 }
