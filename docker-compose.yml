@@ -1,0 +1,29 @@
+version: "3.3"
+services: 
+  nodeserver:
+    image: "balaganapathyparthiban/easy-scrum:nodev1"
+    build: 
+      context: '.'
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    networks:
+        main:
+            aliases:
+                - api
+  nginx:
+    image: "balaganapathyparthiban/easy-scrum:nginxv1"
+    build:
+        context: ./nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - nodeserver
+    restart: always
+    networks:
+        main:
+            aliases:
+                - nginx
+networks:
+  main:
